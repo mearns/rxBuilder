@@ -54,8 +54,8 @@ class Foo {
         Foo build() {
             return new Foo(
                     name,
-                    bars?.collect{ it.build() }?.toArray(new Bar[0]),
-                    trots?.collect{ it.build() }?.toArray(new Trot[0])
+                    bars?.collect{ it?.build() }?.toArray(new Bar[0]),
+                    trots?.collect{ it?.build() }?.toArray(new Trot[0])
             )
         }
     }

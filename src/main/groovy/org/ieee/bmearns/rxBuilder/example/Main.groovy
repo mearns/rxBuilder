@@ -18,27 +18,27 @@ class Main {
             }
             .map { StreamCollector<Foo.FooBuilder, Object> streams ->
                 streams.addStream(
-                        getBarNamesForFoo(streams.subject.name)
-                                .map { String barName ->
-                                    return (new Bar.BarBuilder()).name(barName)
-                                }
-                                .map { Bar.BarBuilder barBuilder ->
-                                    return streams.subject.bar(barBuilder)
-                                }
+                    getBarNamesForFoo(streams.subject.name)
+                        .map { String barName ->
+                            return (new Bar.BarBuilder()).name(barName)
+                        }
+                        .map { Bar.BarBuilder barBuilder ->
+                            return streams.subject.bar(barBuilder)
+                        }
                 )
             }
             .map { StreamCollector<Foo.FooBuilder, Object> streams ->
                 streams.addStream(
-                        getTrotNamesForFoo(streams.subject.name)
-                                .map { String trotName ->
-                                    return (new Trot.TrotBuilder()).name(trotName)
-                                }
-                                .map { Trot.TrotBuilder trotBuilder ->
-                                    return streams.subject.trot(trotBuilder)
-                                }
+                    getTrotNamesForFoo(streams.subject.name)
+                        .map { String trotName ->
+                            return (new Trot.TrotBuilder()).name(trotName)
+                        }
+                        .map { Trot.TrotBuilder trotBuilder ->
+                            return streams.subject.trot(trotBuilder)
+                        }
                 )
             }
-            .flatMap { StreamCollector<Trot.TrotBuilder, Object> streams -> streams.subjectStream() }
+            .flatMap { StreamCollector<Foo.FooBuilder, Object> streams -> streams.subjectStream() }
 
         fooBuilderStream.subscribe(
                 { println it.build() },
