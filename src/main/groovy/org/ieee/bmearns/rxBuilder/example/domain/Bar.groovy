@@ -33,7 +33,7 @@ class Bar {
             return this;
         }
 
-        BarBuilder bazzes(BazBuilder baz) {
+        BarBuilder baz(BazBuilder baz) {
             this.bazzes.add(baz)
             return this;
         }

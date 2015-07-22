@@ -16,33 +16,58 @@ class Main {
             .map { Foo.FooBuilder builder ->
                 return new StreamCollector<Foo.FooBuilder, Object>(builder)
             }
-            .map { StreamCollector<Foo.FooBuilder, Object> streams ->
-                streams.addStream(
-                    getBarNamesForFoo(streams.subject.name)
+            .map { StreamCollector<Foo.FooBuilder, Object> fooStreams ->
+                fooStreams.addStream(
+                    getBarNamesForFoo(fooStreams.subject.name)
+                        //Create the BarBuilder from the name.
                         .map { String barName ->
                             return (new Bar.BarBuilder()).name(barName)
                         }
+                        //Add the Bar to the Foo.
                         .map { Bar.BarBuilder barBuilder ->
-                            return streams.subject.bar(barBuilder)
+                            fooStreams.subject.bar(barBuilder)
+                            return barBuilder
+                        }
+                        //Create a stream collector for this Bar.
+                        .map { Bar.BarBuilder barBuilder ->
+                            return new StreamCollector<Bar.BarBuilder, Object>(barBuilder)
+                        }
+                        //Query the Baz objects for this Bar.
+                        .map { StreamCollector<Bar.BarBuilder, Object> barStreams ->
+                            barStreams.addStream(
+                                getBazNamesForBar(barStreams.subject.name)
+                                    //Create the BazBuilder
+                                    .map { String bazName ->
+                                        return (new Baz.BazBuilder()).name(bazName)
+                                    }
+                                    //Add it to the Bar
+                                    .map { Baz.BazBuilder bazBuilder ->
+                                        return barStreams.subject.baz(bazBuilder)
+                                    }
+                            )
+                        }
+                        .flatMap { StreamCollector<Bar.BarBuilder, Object> barStreams ->
+                            barStreams.subjectStream()
                         }
                 )
             }
-            .map { StreamCollector<Foo.FooBuilder, Object> streams ->
-                streams.addStream(
-                    getTrotNamesForFoo(streams.subject.name)
+            .map { StreamCollector<Foo.FooBuilder, Object> fooStreams ->
+                fooStreams.addStream(
+                    getTrotNamesForFoo(fooStreams.subject.name)
                         .map { String trotName ->
                             return (new Trot.TrotBuilder()).name(trotName)
                         }
                         .map { Trot.TrotBuilder trotBuilder ->
-                            return streams.subject.trot(trotBuilder)
+                            fooStreams.subject.trot(trotBuilder)
+                            return trotBuilder
                         }
                 )
             }
-            .flatMap { StreamCollector<Foo.FooBuilder, Object> streams -> streams.subjectStream() }
+            .flatMap { StreamCollector<Foo.FooBuilder, Object> fooStreams -> fooStreams.subjectStream() }
 
         fooBuilderStream.subscribe(
                 { println it.build() },
-                { println "Error: " + it.getMessage()},
+                { println "Error: " + it.getMessage(); it.printStackTrace() },
                 { println "Done"}
         )
 
@@ -73,9 +98,23 @@ class Main {
             case "foo2":
                 return Observable.<String>just("trot2-1", "trot2-2", "trot2-3")
             case "foo3":
-                return Observable.<String>just("trot3-1", "trot3-2", "ERROR", "trot3-4", "trot3-5")
+                return Observable.<String>just("trot3-1", "trot3-2", "trot3-3", "trot3-4", "trot3-5")
             default:
                 return Observable.<String>from([])
+        }
+    }
+
+
+    public static Observable<String> getBazNamesForBar(String barName) {
+        switch(barName) {
+            case "bar1-1":
+                return Observable.<String>just("baz-A", "baz-B")
+            case "bar2-1":
+                return Observable.<String>just("baz-C")
+            case "bar2-2":
+                return Observable.<String>from([])
+            default:
+                return Observable.<String>just("baz-N")
         }
     }
 }

@@ -32,7 +32,7 @@ class StreamCollector<T, S> {
 
     public Observable<T> subjectStream() {
         mergeStreams()
-            .last()
+            .toList()
             .<T>map { this.subject }
     }
 
