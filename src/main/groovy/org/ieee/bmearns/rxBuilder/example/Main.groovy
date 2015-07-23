@@ -23,6 +23,15 @@ class Main {
                 }
         )
 
+        UpdaterStreamFactory<Foo.FooBuilder, String> fooUpdaterTrotStreamFactory = new DefaultUpdaterStreamFactory<>(
+                {Foo.FooBuilder subject, String trotName ->
+                    subject.trot(new Trot.TrotBuilder().name(trotName))
+                },
+                {Foo.FooBuilder subject ->
+                    ExampleRemoteService.getTrotNamesForFoo(subject.name)
+                }
+        )
+
         UpdaterStreamFactory<Foo.FooBuilder, Bar.BarBuilder> fooUpdaterBarStreamFactory = new DefaultUpdaterStreamFactory<>(
                 {Foo.FooBuilder subject, Bar.BarBuilder barBuilder ->
                     subject.bar(barBuilder)
@@ -47,6 +56,7 @@ class Main {
                 .map({ Foo.FooBuilder fooBuilder ->
                     (new ReactiveUpdater<Foo.FooBuilder>(fooBuilder))
                         .addUpdater(fooUpdaterBarStreamFactory)
+                        .addUpdater(fooUpdaterTrotStreamFactory)
                         .waitFor()
                 } as Func1<Foo.FooBuilder, Foo.FooBuilder>)
 
