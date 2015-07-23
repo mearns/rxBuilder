@@ -203,6 +203,9 @@ class StreamingBuilder<T> {
         }
 
         public StreamingBuilder<T> apply(Func2<T, S, ?> func) {
+            //FIXME: No! now stream won't emit anything until this update stream completes,
+            //  which means subsequent updates won't even start until this one ends! Might need a mechanism like the
+            //  stream collector again? That may have had the same problem!
             stream = stream.flatMap({ T subject ->
                 updateSource.call(subject)
                     .map { S update ->
