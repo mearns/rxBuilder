@@ -14,12 +14,29 @@ class Main {
 
     public static void main2() {
 
-        UpdaterStreamFactory<Foo.FooBuilder, String> fooUpdaterBarStreamFactory = new DefaultUpdaterStreamFactory<>(
-                {Foo.FooBuilder subject, String barName ->
-                    subject.bar(new Bar.BarBuilder().name(barName))
+        UpdaterStreamFactory<Bar.BarBuilder, String> barUpdaterBazStreamFactory = new DefaultUpdaterStreamFactory<>(
+                {Bar.BarBuilder subject, String bazName ->
+                    subject.baz(new Baz.BazBuilder().name(bazName))
+                },
+                {Bar.BarBuilder subject ->
+                    ExampleRemoteService.getBazNamesForBar(subject.name)
+                }
+        )
+
+        UpdaterStreamFactory<Foo.FooBuilder, Bar.BarBuilder> fooUpdaterBarStreamFactory = new DefaultUpdaterStreamFactory<>(
+                {Foo.FooBuilder subject, Bar.BarBuilder barBuilder ->
+                    subject.bar(barBuilder)
                 },
                 {Foo.FooBuilder subject ->
                     ExampleRemoteService.getBarNamesForFoo(subject.name)
+                        .map { String name ->
+                            (new Bar.BarBuilder().name(name))
+                        }
+                        .map({ Bar.BarBuilder barBuilder ->
+                            (new ReactiveUpdater<Bar.BarBuilder>(barBuilder))
+                                    .addUpdater(barUpdaterBazStreamFactory)
+                                    .waitFor()
+                        })
                 }
         )
 
@@ -27,12 +44,11 @@ class Main {
                 .map { String name ->
                     return (new Foo.FooBuilder()).name(name)
                 }
-                .flatMap({ Foo.FooBuilder fooBuilder ->
-                    fooUpdaterBarStreamFactory.buildUpdaterStream(fooBuilder).last()
-                } as Func1<Foo.FooBuilder, Observable<UpdaterStreamFactory.EmittedUpdaterItem>>)
-                .map({ UpdaterStreamFactory.EmittedUpdaterItem updaterItem ->
-                    updaterItem.subject
-                } as Func1<UpdaterStreamFactory.EmittedUpdaterItem, Foo.FooBuilder>)
+                .map({ Foo.FooBuilder fooBuilder ->
+                    (new ReactiveUpdater<Foo.FooBuilder>(fooBuilder))
+                        .addUpdater(fooUpdaterBarStreamFactory)
+                        .waitFor()
+                } as Func1<Foo.FooBuilder, Foo.FooBuilder>)
 
         fooBuilderStream.subscribe(
                 { println it.build() },

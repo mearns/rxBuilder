@@ -13,25 +13,27 @@ class ReactiveUpdater<T> {
         this.updaters = new HashSet<>()
     }
 
-    public addUpdater(UpdaterStreamFactory<T, ?>... updaters) {
+    public ReactiveUpdater<T> addUpdater(UpdaterStreamFactory<T, ?>... updaters) {
         updaters.each {
             this.updaters.add(
                 it.buildUpdaterStream(subject)
             )
         }
+        this
     }
 
-    public void waitFor() {
+    public T waitFor() {
         Observable merged
         if(this.updaters.isEmpty()) {
             merged = Observable.from([]);
         } else {
             Iterator<Observable> streamIter = updaters.iterator()
-            Observable merged = streamIter.next()
+            merged = streamIter.next()
             for(Observable stream : streamIter ) {
                 merged = merged.mergeWith(stream)
             }
         }
         BlockingObservable.from(merged.toList()).last()
+        return subject
     }
 }
