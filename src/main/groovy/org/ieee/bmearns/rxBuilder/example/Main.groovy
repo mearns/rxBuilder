@@ -19,20 +19,20 @@ class Main {
         new StreamingBuilder<Foo.FooBuilder>(seedStream)
 
             //Update the bar properties.
-            .updateStream({ Foo.FooBuilder fooBuilder ->
+            .updateStream { fooBuilder ->
                 ExampleRemoteService.getBarNamesForFoo(fooBuilder.name)
-            }  as Func1<Foo.FooBuilder, Observable<String>>)
-                .apply({ Foo.FooBuilder fooBuilder, String barName ->
+            }
+                .apply { fooBuilder, barName ->
                     fooBuilder.bar(new Bar.BarBuilder().name(barName))
-                } as Func2<Foo.FooBuilder, String, ?>)
+                }
 
             //Update the trot properties.
-            .updateStream({ Foo.FooBuilder fooBuilder ->
+            .updateStream { fooBuilder ->
                 ExampleRemoteService.getTrotNamesForFoo(fooBuilder.name)
-            }  as Func1<Foo.FooBuilder, Observable<String>>)
-                .apply({ Foo.FooBuilder fooBuilder, String trotName ->
+            }
+                .apply { fooBuilder, trotName ->
                     fooBuilder.trot(new Trot.TrotBuilder().name(trotName))
-                })
+                }
 
             .stream()
             .subscribe (
