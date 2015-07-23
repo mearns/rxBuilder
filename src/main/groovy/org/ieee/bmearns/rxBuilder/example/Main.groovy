@@ -4,11 +4,44 @@ import org.ieee.bmearns.rxBuilder.example.domain.*
 import org.ieee.bmearns.rxBuilder.example.remote.ExampleRemoteService
 
 import rx.Observable
+import rx.functions.Func1
 
 class Main {
 
     public static void main(String[] args) {
+        main2()
+    }
 
+    public static void main2() {
+
+        UpdaterStreamFactory<Foo.FooBuilder, String> fooUpdaterBarStreamFactory = new DefaultUpdaterStreamFactory<>(
+                {Foo.FooBuilder subject, String barName ->
+                    subject.bar(new Bar.BarBuilder().name(barName))
+                },
+                {Foo.FooBuilder subject ->
+                    ExampleRemoteService.getBarNamesForFoo(subject.name)
+                }
+        )
+
+        Observable<Foo.FooBuilder> fooBuilderStream = ExampleRemoteService.getFooNames()
+                .map { String name ->
+                    return (new Foo.FooBuilder()).name(name)
+                }
+                .flatMap({ Foo.FooBuilder fooBuilder ->
+                    fooUpdaterBarStreamFactory.buildUpdaterStream(fooBuilder).last()
+                } as Func1<Foo.FooBuilder, Observable<UpdaterStreamFactory.EmittedUpdaterItem>>)
+                .map({ UpdaterStreamFactory.EmittedUpdaterItem updaterItem ->
+                    updaterItem.subject
+                } as Func1<UpdaterStreamFactory.EmittedUpdaterItem, Foo.FooBuilder>)
+
+        fooBuilderStream.subscribe(
+                { println it.build() },
+                { println "Error: " + it.getMessage(); it.printStackTrace() },
+                { println "Done"}
+        )
+    }
+
+    public static void main1() {
         Observable<Foo.FooBuilder> fooBuilderStream = ExampleRemoteService.getFooNames()
             .map { String name ->
                 return (new Foo.FooBuilder()).name(name)
