@@ -146,6 +146,37 @@ import rx.functions.Func2
  *
  * And that's all there is to that.
  *
+ * All together, out code looks something like this:
+ *
+ * <pre> {@code
+ * StreamingBuilder<User> userBuilder = new StreamingBuilder<>(userStream)
+ *      //Update basic information
+ *      .updateStream { User subject ->
+ *          return Observable.from(api.getUserDetails(subject.getId()));
+ *      }
+ *      .apply { User subject, Map<String, Object> userDetails ->
+ *          User.setUsername(Map.get("username"));
+ *          User.setDisplayName(Map.get("displayName"));
+ *      }
+ *
+ *      //Update profile information
+ *      .updateStream { User subject ->
+ *          return Observable.from(api.getProfile(subject.getProfileId()));
+ *      }
+ *      . apply { User subject, Map<String, Object> profile ->
+ *          subject.setRealName(profile.get("realName"))
+ *          subject.setLocation(profile.get("location"))
+ *          subject.setBiography(profile.get("biography"))
+ *          // ... etc.
+ *      }
+ *
+ *      //And lastly, subscribe to the stream.
+ *      .stream()
+ *      .subscribe { User user ->
+ *          println "User: " + user;
+ *      }
+ * } </pre>
+ *
  * @param < T > The type of object built by the streaming builder.
  */
 class StreamingBuilder<T> {
