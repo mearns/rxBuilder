@@ -20,19 +20,34 @@ class Main {
 
             //Update the bar properties.
             .updateStream { fooBuilder ->
-                ExampleRemoteService.getBarNamesForFoo(fooBuilder.name)
-            }
-                .apply { fooBuilder, barName ->
-                    fooBuilder.bar(new Bar.BarBuilder().name(barName))
+
+                new StreamingBuilder<Bar.BarBuilder>(
+                    ExampleRemoteService.getBarNamesForFoo(fooBuilder.name)
+                        .map { barName ->
+                            new Bar.BarBuilder().name(barName)
+                        }
+                )
+
+                //Update the baz properties.
+                .updateStream { barBuilder ->
+                    ExampleRemoteService.getBazNamesForBar(barBuilder.name)
                 }
+                .apply { barBuilder, bazName ->
+                    barBuilder.baz(new Baz.BazBuilder().name(bazName))
+                }
+                .stream()
+            }
+            .apply { fooBuilder, barBuilder ->
+                fooBuilder.bar(barBuilder)
+            }
 
             //Update the trot properties.
             .updateStream { fooBuilder ->
                 ExampleRemoteService.getTrotNamesForFoo(fooBuilder.name)
             }
-                .apply { fooBuilder, trotName ->
-                    fooBuilder.trot(new Trot.TrotBuilder().name(trotName))
-                }
+            .apply { fooBuilder, trotName ->
+                fooBuilder.trot(new Trot.TrotBuilder().name(trotName))
+            }
 
             .stream()
             .subscribe (

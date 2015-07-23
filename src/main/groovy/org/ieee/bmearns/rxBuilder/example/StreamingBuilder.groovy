@@ -33,7 +33,7 @@ class StreamingBuilder<T> {
                     .map { S update ->
                         func(subject, update)
                     }
-                    .last()
+                    .toList()
                     .map {
                         return subject
                     }
