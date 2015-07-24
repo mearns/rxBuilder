@@ -12,10 +12,10 @@ class DefaultUpdater<T, U> implements Updater<T, U> {
     }
 
     DefaultUpdater(Closure<?> updateFunc) {
-        this.updateFunc = (updateFunc as Func2<T, U, ?>);
+        this(updateFunc as Func2<T, U, ?>);
     }
 
     public void update(T subject, U update) {
-        updateFunc(subject, update);
+        updateFunc.call(subject, update);
     }
 }

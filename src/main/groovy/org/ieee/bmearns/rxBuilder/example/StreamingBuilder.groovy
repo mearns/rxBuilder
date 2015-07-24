@@ -190,6 +190,14 @@ class StreamingBuilder<T> {
     }
 
     public <S> UpdateStream<S> updateStream(Func1<T, Observable<S>> updateSource) {
+        return new UpdateStream<S>(new DefaultUpdateStreamFactory<T,S>(updateSource))
+    }
+
+    public <S> UpdateStream<S> updateStream(Closure<Observable<S>> updateSource) {
+        return new UpdateStream<S>(new DefaultUpdateStreamFactory<T,S>(updateSource))
+    }
+
+    public <S> UpdateStream<S> updateStream(UpdateStreamFactory<T, S> updateSource) {
         return new UpdateStream<S>(updateSource)
     }
 
@@ -200,10 +208,10 @@ class StreamingBuilder<T> {
     }
 
     public class UpdateStream<S> {
-        final Func1<T, Observable<S>> updateSource
+        final UpdateStreamFactory<T,S> updateStreamFactory
 
-        UpdateStream(Func1<T, Observable<S>> updateSource) {
-            this.updateSource = updateSource
+        UpdateStream(UpdateStreamFactory<T,S> updateStreamFactory) {
+            this.updateStreamFactory = updateStreamFactory;
         }
 
         public StreamingBuilder<T> apply(Closure<?> updateFunc) {
@@ -217,7 +225,7 @@ class StreamingBuilder<T> {
         public StreamingBuilder<T> apply(Updater<T, S> updater) {
             stream = stream.map({ Subject<T> subject ->
                 subject.addStream(
-                    updateSource.call(subject.subject)
+                    updateStreamFactory.getUpdateStream(subject.subject)
                         .map { S update ->
                             updater.update(subject.subject, update)
                             return null
