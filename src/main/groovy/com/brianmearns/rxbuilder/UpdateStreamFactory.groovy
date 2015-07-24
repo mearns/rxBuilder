@@ -1,4 +1,4 @@
-package org.ieee.bmearns.rxBuilder.example
+package com.brianmearns.rxbuilder
 
 interface UpdateStreamFactory<T, S> {
 

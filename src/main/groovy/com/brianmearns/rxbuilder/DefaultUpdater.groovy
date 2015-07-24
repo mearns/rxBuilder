@@ -1,5 +1,5 @@
 
-package org.ieee.bmearns.rxBuilder.example
+package com.brianmearns.rxbuilder
 
 import rx.functions.Func2
 

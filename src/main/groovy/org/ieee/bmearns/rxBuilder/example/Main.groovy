@@ -1,11 +1,10 @@
 package org.ieee.bmearns.rxBuilder.example
 
+import com.brianmearns.rxbuilder.StreamingBuilder
 import org.ieee.bmearns.rxBuilder.example.domain.*
 import org.ieee.bmearns.rxBuilder.example.remote.ExampleRemoteService
 
 import rx.Observable
-import rx.functions.Func1
-import rx.functions.Func2
 
 class Main {
 

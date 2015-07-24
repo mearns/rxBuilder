@@ -1,4 +1,4 @@
-package org.ieee.bmearns.rxBuilder.example
+package com.brianmearns.rxbuilder
 
 import rx.Observable
 import rx.functions.Func1
