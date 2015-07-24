@@ -1,6 +1,6 @@
-package org.ieee.bmearns.rxBuilder.example.remote
+package example.remote
 
-import rx.Observable
+import Observable
 
 /**
  * Represents some kind of service that we are querying to get data from to build our objects.

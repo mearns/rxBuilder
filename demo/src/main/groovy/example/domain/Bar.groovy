@@ -1,7 +1,4 @@
-package org.ieee.bmearns.rxBuilder.example.domain
-
-import org.ieee.bmearns.rxBuilder.example.domain.Baz.BazBuilder
-
+package example.domain
 
 class Bar {
     final String name
@@ -22,7 +19,7 @@ class Bar {
 
     static class BarBuilder {
         String name
-        List<BazBuilder> bazzes
+        List<Baz.BazBuilder> bazzes
 
         {
             bazzes = new LinkedList<>()
@@ -33,7 +30,7 @@ class Bar {
             return this;
         }
 
-        BarBuilder baz(BazBuilder baz) {
+        BarBuilder baz(Baz.BazBuilder baz) {
             this.bazzes.add(baz)
             return this;
         }

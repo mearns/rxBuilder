@@ -1,4 +1,4 @@
-package org.ieee.bmearns.rxBuilder.example.domain
+package example.domain
 
 class Baz {
     final String name

@@ -1,10 +1,12 @@
-package org.ieee.bmearns.rxBuilder.example
+package example
 
-import com.brianmearns.rxbuilder.StreamingBuilder
+import StreamingBuilder
+import example.domain.Bar
+import example.domain.Baz
+import example.domain.Foo
+import example.domain.Trot
 import org.ieee.bmearns.rxBuilder.example.domain.*
-import org.ieee.bmearns.rxBuilder.example.remote.ExampleRemoteService
-
-import rx.Observable
+import example.remote.ExampleRemoteService
 
 class Main {
 
