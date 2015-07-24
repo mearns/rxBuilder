@@ -206,6 +206,7 @@ class StreamingBuilder<T> {
             this.updateSource = updateSource
         }
 
+        //XXX: Use an Updater interface for this.
         public StreamingBuilder<T> apply(Func2<T, S, ?> updateFunc) {
             stream = stream.map({ Subject<T> subject ->
                 subject.addStream(
