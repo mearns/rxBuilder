@@ -181,10 +181,12 @@ import rx.functions.Func2
  */
 class StreamingBuilder<T> {
 
-    private Observable<T> stream
+    private Observable<Subject<T>> stream
 
     StreamingBuilder(Observable<T> subjectSource) {
-        this.stream = subjectSource
+        this.stream = subjectSource.map { T source ->
+            new Subject<T>(source)
+        }
     }
 
     public <S> UpdateStream<S> updateStream(Func1<T, Observable<S>> updateSource) {
@@ -192,7 +194,9 @@ class StreamingBuilder<T> {
     }
 
     public Observable<T> stream() {
-        return stream
+        return stream.flatMap { Subject<T> subject ->
+            subject.mergedStream.toList().map{ subject.subject }
+        }
     }
 
     public class UpdateStream<S> {
@@ -202,22 +206,39 @@ class StreamingBuilder<T> {
             this.updateSource = updateSource
         }
 
-        public StreamingBuilder<T> apply(Func2<T, S, ?> func) {
-            //FIXME: No! now stream won't emit anything until this update stream completes,
-            //  which means subsequent updates won't even start until this one ends! Might need a mechanism like the
-            //  stream collector again? That may have had the same problem!
-            stream = stream.flatMap({ T subject ->
-                updateSource.call(subject)
-                    .map { S update ->
-                        func(subject, update)
-                    }
-                    .toList()
-                    .map {
-                        return subject
-                    }
-            } as Func1<T, Observable<T>>)
+        public StreamingBuilder<T> apply(Func2<T, S, ?> updateFunc) {
+            stream = stream.map({ Subject<T> subject ->
+                subject.addStream(
+                    updateSource.call(subject.subject)
+                        .map { S update ->
+                            updateFunc.call(subject.subject, update)
+                            return null
+                        }
+                )
+            } as Func1<Subject<T>, Subject<T>>)
 
             return StreamingBuilder.this;
+        }
+    }
+
+    private static class Subject<T> {
+        final T subject
+        Observable mergedStream
+
+        public Subject(T subject) {
+            this.subject = subject
+            this.mergedStream = null
+        }
+
+        public Subject<T> addStream(Observable<Void> stream) {
+            stream = stream.ignoreElements()
+            if (this.mergedStream == null) {
+                this.mergedStream = stream
+            }
+            else {
+                this.mergedStream = this.mergedStream.mergeWith(stream)
+            }
+            return this;
         }
     }
 }
