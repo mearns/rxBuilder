@@ -3,7 +3,7 @@ package org.ieee.bmearns.rxBuilder.example
 
 import rx.functions.Func2
 
-class DefaultUpdater<T, U> implements Updater<T, U>, Func2<T, U, Object> {
+class DefaultUpdater<T, U> implements Updater<T, U> {
 
     Func2<T, U, ?> updateFunc;
 
@@ -18,10 +18,4 @@ class DefaultUpdater<T, U> implements Updater<T, U>, Func2<T, U, Object> {
     public void update(T subject, U update) {
         updateFunc(subject, update);
     }
-
-    public Object call(T subject, U update) {
-        this.update(subject, update);
-        return null;
-    }
-
 }

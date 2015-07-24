@@ -184,9 +184,9 @@ class StreamingBuilder<T> {
     private Observable<Subject<T>> stream
 
     StreamingBuilder(Observable<T> subjectSource) {
-        this.stream = subjectSource.map { T source ->
+        this.stream = subjectSource.map({ T source ->
             new Subject<T>(source)
-        }
+        } as Func1<T, Subject<T>>)
     }
 
     public <S> UpdateStream<S> updateStream(Func1<T, Observable<S>> updateSource) {
@@ -194,9 +194,9 @@ class StreamingBuilder<T> {
     }
 
     public Observable<T> stream() {
-        return stream.flatMap { Subject<T> subject ->
+        return stream.flatMap({ Subject<T> subject ->
             subject.mergedStream.toList().map{ subject.subject }
-        }
+        } as Func1<Subject<T>, Observable<T>>)
     }
 
     public class UpdateStream<S> {
@@ -206,13 +206,20 @@ class StreamingBuilder<T> {
             this.updateSource = updateSource
         }
 
-        //XXX: Use an Updater interface for this.
+        public StreamingBuilder<T> apply(Closure<?> updateFunc) {
+            return apply(new DefaultUpdater<T,S>(updateFunc))
+        }
+
         public StreamingBuilder<T> apply(Func2<T, S, ?> updateFunc) {
+            return apply(new DefaultUpdater<T,S>(updateFunc))
+        }
+
+        public StreamingBuilder<T> apply(Updater<T, S> updater) {
             stream = stream.map({ Subject<T> subject ->
                 subject.addStream(
                     updateSource.call(subject.subject)
                         .map { S update ->
-                            updateFunc.call(subject.subject, update)
+                            updater.update(subject.subject, update)
                             return null
                         }
                 )
