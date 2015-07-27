@@ -1,6 +1,6 @@
-package example.remote
+package com.commercehub.rxbuilder.demo.remote
 
-import Observable
+import rx.Observable
 
 /**
  * Represents some kind of service that we are querying to get data from to build our objects.

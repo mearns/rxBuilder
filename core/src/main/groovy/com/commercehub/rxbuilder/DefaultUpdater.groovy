@@ -1,5 +1,5 @@
 
-package com.brianmearns.rxbuilder
+package com.commercehub.rxbuilder
 
 import rx.functions.Func2
 

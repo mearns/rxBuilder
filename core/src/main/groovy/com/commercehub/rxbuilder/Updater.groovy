@@ -1,5 +1,5 @@
 
-package com.brianmearns.rxbuilder
+package com.commercehub.rxbuilder
 
 interface Updater<T, U> {
 

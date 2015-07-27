@@ -1,4 +1,5 @@
 
 rootProject.name = 'rxBuilder'
 include 'demo'
+include 'core'
 

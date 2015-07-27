@@ -1,29 +1,30 @@
-package example.domain
+package com.commercehub.rxbuilder.demo.domain
 
-class Baz {
+
+class Trot {
     final String name
 
-    Baz(String name) {
+    Trot(String name) {
         this.name = name
     }
 
     @Override
     public String toString() {
-        return "Baz{" +
+        return "Trot{" +
                 "name='" + name + '\'' +
                 '}';
     }
 
-    static class BazBuilder {
+    static class TrotBuilder {
         String name
 
-        BazBuilder name(String name) {
+        TrotBuilder name(String name) {
             this.name = name;
             return this;
         }
 
-        Baz build() {
-            return new Baz(name);
+        Trot build() {
+            return new Trot(name);
         }
     }
 }

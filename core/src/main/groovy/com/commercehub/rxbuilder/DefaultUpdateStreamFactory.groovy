@@ -1,7 +1,7 @@
-package com.brianmearns.rxbuilder
+package com.commercehub.rxbuilder
 
-import rx.Observable
 import rx.functions.Func1
+import rx.Observable
 
 class DefaultUpdateStreamFactory<T,S> implements UpdateStreamFactory<T,S> {
 

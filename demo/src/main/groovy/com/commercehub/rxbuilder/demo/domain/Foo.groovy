@@ -1,4 +1,4 @@
-package example.domain
+package com.commercehub.rxbuilder.demo.domain
 
 
 class Foo {

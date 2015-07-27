@@ -1,8 +1,8 @@
-package com.brianmearns.rxbuilder
+package com.commercehub.rxbuilder
 
 import rx.functions.Func1
-import rx.Observable
 import rx.functions.Func2
+import rx.Observable
 
 /**
  * An object to create a stream that updates objects of type T, emitted from a source stream.
@@ -58,7 +58,7 @@ import rx.functions.Func2
  * objects with the update objects it emits. So you'll need to provide a closure to do each of those things.
  *
  * The first step is to provide a closure which will create an update stream for a given user, which is done using
- * the {@link StreamingBuilder#updateStream(rx.functions.Func1) updateStream({})} method:
+ * the {@link StreamingBuilder#updateStream(Func1) updateStream({})} method:
  *
  * <pre> {@code
  * def updateStream = userBuilder.updateStream { User subject ->
@@ -70,7 +70,7 @@ import rx.functions.Func2
  * So now for each user emitted by the source stream, we know how to create another stream, called an update stream,
  * which will emit a {@code Map} with some additional user details. Now you need to provide the second part, a way
  * to actually update our {@code User} objects with those emitted details. You do this using the
- * {@link StreamingBuilder.UpdateStream#apply(rx.functions.Func2) apply({})} method:
+ * {@link StreamingBuilder.UpdateStream#apply(Func2) apply({})} method:
  *
  * <pre> {@code
  * updateStream.apply { User subject, Map<String, Object> userDetails ->
@@ -82,13 +82,13 @@ import rx.functions.Func2
  *
  * Simple enough.
  *
- * The {@link StreamingBuilder#updateStream(rx.functions.Func1) updateStream} method actually returns an {@link
+ * The {@link StreamingBuilder#updateStream(Func1) updateStream} method actually returns an {@link
  * StreamingBuilder.UpdateStream UpdateStream} object, but one that is tied to
  * the {@link StreamingBuilder} that created it ({@code userBuilder}, in this case). But you really don't need to
  * care about that, which is why we just showed a {@code def} for that variable above.
  *
  * The only thing that matters about the {@code BuildStream} is that it provides the
- * {@link StreamingBuilder.UpdateStream#apply(rx.functions.Func2) apply} method that
+ * {@link StreamingBuilder.UpdateStream#apply(Func2) apply} method that
  * we used above. Conveniently, the {@code apply} method returns the {@code StreamingBuilder} itself, so we can chain
  * pairs of {@code updateStream} and {@code apply} calls together indefinitely. For starters, we'll rewrite the previous
  * three code blocks like this (along with some additional minor code clean up):

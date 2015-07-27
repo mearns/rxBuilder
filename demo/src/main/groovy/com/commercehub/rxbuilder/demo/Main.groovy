@@ -1,12 +1,14 @@
-package example
+package com.commercehub.rxbuilder.demo
 
-import StreamingBuilder
-import example.domain.Bar
-import example.domain.Baz
-import example.domain.Foo
-import example.domain.Trot
-import org.ieee.bmearns.rxBuilder.example.domain.*
-import example.remote.ExampleRemoteService
+import com.commercehub.rxbuilder.StreamingBuilder
+
+import com.commercehub.rxbuilder.demo.domain.Bar
+import com.commercehub.rxbuilder.demo.domain.Baz
+import com.commercehub.rxbuilder.demo.domain.Foo
+import com.commercehub.rxbuilder.demo.domain.Trot
+import com.commercehub.rxbuilder.demo.remote.ExampleRemoteService
+
+import rx.Observable
 
 class Main {
 
